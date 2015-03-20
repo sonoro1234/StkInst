@@ -1,0 +1,53 @@
+cmake_minimum_required (VERSION 2.8)
+set(PROYECTO "StkInst")
+project (${PROYECTO})
+set(STKDIR ${CMAKE_CURRENT_SOURCE_DIR}/stk)
+
+file(GLOB STKSources "${STKDIR}/src/*.cpp")
+file(GLOB UnneededSTKSources "${STKDIR}/src/Rt*.cpp"
+                             "${STKDIR}/src/Inet*.cpp"
+                             "${STKDIR}/src/Socket.cpp"
+                             "${STKDIR}/src/Tcp*.cpp"
+                             "${STKDIR}/src/UdpSocket.cpp"
+                             "${STKDIR}/src/Thread.cpp"
+                             "${STKDIR}/src/Mutex.cpp"
+)
+#message(WARNING ${STKSources})
+list(REMOVE_ITEM STKSources ${UnneededSTKSources})
+include_directories(${STKDIR})
+include_directories(${STKDIR}/include)
+include_directories(${STKDIR}/src/include)
+
+
+include_directories(${SC_PATH}/include/plugin_interface)
+include_directories(${SC_PATH}/include/common)
+include_directories(${SC_PATH}/common)
+include_directories(${SC_PATH}/external_libraries/libsndfile/)
+
+
+set(CMAKE_SHARED_MODULE_PREFIX "")
+if(APPLE OR WIN32)
+set(CMAKE_SHARED_MODULE_SUFFIX ".scx")
+endif()
+	
+if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse2 -mstackrealign")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse2 -mstackrealign")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+endif()
+
+
+add_library(${PROYECTO} MODULE ${PROYECTO}.cpp ${STKSources})
+
+add_library(${PROYECTO}_supernova MODULE ${PROYECTO}.cpp ${STKSources})
+set_property(TARGET ${PROYECTO}_supernova APPEND PROPERTY COMPILE_DEFINITIONS  "SUPERNOVA")
+include_directories(${SC_PATH}/external_libraries
+					${SC_PATH}/external_libraries/boost-lockfree
+					${SC_PATH}/external_libraries/nova-simd
+					${SC_PATH}/external_libraries/nova-tt
+					)
+include_directories(${SC_PATH}/external_libraries/boost)
+include_directories(${SC_PATH}/external_libraries/nova-simd)
+add_definitions("-DNOVA_SIMD")
+
+INSTALL(TARGETS ${PROYECTO} ${PROYECTO}_supernova LIBRARY DESTINATION "C:/SupercolliderRepos/Mios/ugens/")
