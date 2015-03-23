@@ -110,7 +110,7 @@ struct StkInst : public Unit
 	int m_valueSize;
 	int m_valueOffset;
 	float *m_values;
-	
+	float *old_values;
 	bool do_freq;
 	int instNumber;
 	//StkInst(Unit *unit);
@@ -127,30 +127,39 @@ extern "C"
 static void Unit_next_nop(StkInst * unit, int inNumSamples)
 {}
 void StkInst_Ctor(StkInst* unit) {
+
 	gWorld = unit->mWorld;
 	Stk::setSampleRate( SAMPLERATE );
+
 	unit->gate = false;
 	unit->freq = IN0(0);
 	unit->ampat = 1;
 	unit->amprel = 1;
 	unit->m_values = 0;
+	unit->old_values = 0;
 	unit->do_freq = true;
 	const int kVarOffset = 5;
+
 	unit->instNumber = IN0(4);
 	unit->m_valueSize = unit->mNumInputs - kVarOffset;
-	
+	//Print("StkInst\n");
+	//Print("StkInst %d,%f;%f,%d,%d\n",unit->instNumber,unit->freq,unit->ampat,unit->mNumInputs,unit->m_valueSize);
+	//make it pair
+	unit->m_valueSize = floor(unit->m_valueSize /2.0) * 2.0;
 	if(unit->m_valueSize > 0){
 		const int valuesAllocSize = unit->m_valueSize * sizeof(float);
-		char * chunk = (char*)RTAlloc(unit->mWorld, valuesAllocSize);
+		char * chunk = (char*)RTAlloc(unit->mWorld, valuesAllocSize*2);
 		if (!chunk) {
 			Print("StkInst: RT memory allocation failed on values\n");
 			SETCALC(Unit_next_nop);
 			return;
 		}
 		unit->m_values  = (float*)chunk;
+		unit->old_values = (float*)(chunk + valuesAllocSize);
+		for (int i=0; i<unit->m_valueSize; i++)
+			unit->old_values[i] = -1; //set old values to something imposible
 	}
-	//void * _STKMem_ = RTAlloc(unit->mWorld, sizeof(Bowed));
-   // unit->inst = new(_STKMem_) Bowed();
+
 	unit->inst = NULL;
 	try {
 		if(voiceByNumber(unit->instNumber,&(unit->inst))==-1){
@@ -186,13 +195,18 @@ void StkInst_next(StkInst *unit, int inNumSamples)
 
 	
 	float *values = unit->m_values;
+	float *old_values = unit->old_values;
 	int valueSize = unit->m_valueSize;
 	int valueOffset = 5;
 	for (int i=0; i<valueSize; i++)
 		values[i] = IN0(i + valueOffset);
 
-	for(int i=0; i < valueSize; i+=2)
-		unit->inst->controlChange(values[i], values[i+1]);
+	for(int i=0; i < valueSize ; i+=2){
+		if(values[i+1] != old_values[i + 1]){
+			unit->inst->controlChange(values[i], values[i+1]);
+			old_values[i + 1] = values[i+1];
+		}
+	}
 	if(unit->do_freq && freq != unit->freq){
 		unit->inst->setFrequency(freq);
 		unit->freq = freq;
