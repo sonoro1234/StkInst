@@ -360,6 +360,7 @@ void StkGlobals_Ctor(StkGlobals* unit) {
 	}
 	Stk::showWarnings(unit->showWarnings);
 	Stk::printErrors(unit->printErrors);
+	RTFree(unit->mWorld,unit->rawwavePath);
 	SETCALC(StkGlobals_next);
 }
 ////////////////////////////////////////
