@@ -1,6 +1,8 @@
 cmake_minimum_required (VERSION 2.8)
 set(PROYECTO "StkInst")
 project (${PROYECTO})
+
+include (${CMAKE_ROOT}/Modules/TestBigEndian.cmake)
 set(STKDIR ${CMAKE_CURRENT_SOURCE_DIR}/stk)
 
 file(GLOB STKSources "${STKDIR}/src/*.cpp")
@@ -35,7 +37,12 @@ if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse2 -mstackrealign")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 endif()
+add_definitions("-D_STK_DEBUG_") 
 
+TEST_BIG_ENDIAN(is_big_endian)
+if(NOT is_big_endian)
+	add_definitions("-D__LITTLE_ENDIAN__")
+endif()
 
 add_library(${PROYECTO} MODULE ${PROYECTO}.cpp ${STKSources})
 
@@ -49,5 +56,5 @@ include_directories(${SC_PATH}/external_libraries
 include_directories(${SC_PATH}/external_libraries/boost)
 include_directories(${SC_PATH}/external_libraries/nova-simd)
 add_definitions("-DNOVA_SIMD")
-
+#INSTALL(TARGETS ${PROYECTO} ${PROYECTO}_supernova LIBRARY DESTINATION "C:/Users/victor/AppData/Local/SuperCollider/Extensions/SC3plugins")
 INSTALL(TARGETS ${PROYECTO} ${PROYECTO}_supernova LIBRARY DESTINATION "C:/SupercolliderRepos/Mios/ugens/")
