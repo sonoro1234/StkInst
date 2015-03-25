@@ -37,7 +37,7 @@ if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse2 -mstackrealign")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 endif()
-#add_definitions("-D_STK_DEBUG_") 
+add_definitions("-D_STK_DEBUG_") 
 
 TEST_BIG_ENDIAN(is_big_endian)
 if(NOT is_big_endian)
