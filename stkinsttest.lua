@@ -24,7 +24,7 @@ function StkGlobals.ar(showWarnings, printErrors, rawfilepath)
 end
 
 ------------------------some synthdefs
-SynthDef("help_stkBowed",{out=0,freq=200,gate=1,amp=1,bowvel=65,pres=94,pos=16,vf=30,vg=1},function()
+SynthDef("help_stkBowed",{out=0,freq=200,gate=1,amp=1,bowvel=65,pres=94,pos=16,vf=50,vg=1},function()
 
 	local env = EnvGen.kr{Env.asr(0,1,0.1),gate,doneAction=2}
 	local sig = StkInst.ar(Stk.Bowed,freq,gate,amp,0.5,{2,pres,4,pos,1,vg,11,vf})
@@ -42,31 +42,32 @@ SynthDef("help_stkBrass",{out=0,freq=200,gate=1,amp=1,stiff=50,pres= 111,noise=2
 	Out.ar(out,sig:dup())
 end):store()
 
-SynthDef("help_stkS",{out=0,freq=200,gate=1,amp=1,stiff=50,pres= 111,noise=24,vf=60,vg=1},function()
-	--StkGlobals.ir(1,1,[[C:\SupercolliderRepos\Mios\stk-4.5.0\stk-4.5.0\rawwaves\]])
-	local env = EnvGen.kr{Env.asr(0,1,0.1),gate,doneAction=2}
-	local sig = StkInst.ar(Stk.Simple,freq,gate,amp,0.05)--,{2,stiff,128,pres,4,noise,1,vg,11,vf})
+
+SynthDef("help_VoicForm",{out=0,freq=200,gate=1,amp=1,phon=8,loud=50,mix=65,vf=60,vg=20},function()
+	StkGlobals.ar(1,1,[[C:\SupercolliderRepos\Mios\stk-4.5.0\stk-4.5.0\rawwaves\]])
+	local env = EnvGen.kr{Env.asr(0.3,1,0.1),gate,doneAction=2}
+	local sig = StkInst.ar(Stk.VoicForm,freq,gate,amp,0.05,{4,phon,2,mix,128,loud,1,vg,11,vf})*env--,{2,stiff,128,pres,4,noise,1,vg,11,vf})
 	Out.ar(out,sig:dup())
 end):store()
 
-SynthDef("help_VoicForm",{out=0,freq=200,gate=1,amp=1,phon=8,vf=60,vg=1},function()
-	StkGlobals.ar(1,1,[[C:\SupercolliderRepos\Mios\stk-4.5.0\stk-4.5.0\rawwaves\]])
+SynthDef("help_stkS",{out=0,freq=200,gate=1,amp=1,vowel=120,tilt= 50,targ=50,noise=24,vf=60,vg=1},function()
+	--StkGlobals.ir(1,1,[[C:\SupercolliderRepos\Mios\stk-4.5.0\stk-4.5.0\rawwaves\]])
 	local env = EnvGen.kr{Env.asr(0,1,0.1),gate,doneAction=2}
-	local sig = StkInst.ar(Stk.VoicForm,freq,gate,amp,0.05,{4,phon})--,{2,stiff,128,pres,4,noise,1,vg,11,vf})
+	local sig = StkInst.ar(Stk.BlowHole,freq,gate,amp,0.5)--,{2,vowel,4,tilt,128,targ})*env--,{16,3})--,{2,stiff,128,pres,4,noise,1,vg,11,vf})
 	Out.ar(out,sig:dup())
 end):store()
 
 SynthDef("stkglobals",{},function()
-		StkGlobals.ar(1,1,[[C:\SupercolliderRepos\Mios\stk-4.5.0\stk-4.5.0\rawwaves\]])
-end)--:play()
+		StkGlobals.ar(1,1,[[C:/SupercolliderRepos/Mios/stk-4.5.0/stk-4.5.0/rawwaves/]])
+end):play()
 ------------------------------------use it
 local sclua = require "sclua.Server"
 local s = sclua.Server()
 
 --sinte = s.Synth("help_stkS",{freq=200})
 
-instgui=InstrumentsGUI("help_VoicForm",false)
-MidiToOsc.AddChannel(0,instgui,{0.1},mmm,nil,false)
+instgui=InstrumentsGUI("help_stkBowed",false)
+MidiToOsc.AddChannel(0,instgui,{0.1},mmm)--,{{"bowsoundboard"}},false)
 
 --[[
 sinte:set{freq = 300}
