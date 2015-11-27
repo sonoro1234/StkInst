@@ -32,6 +32,7 @@ World * gWorld;
 #include "Resonate.h"
 #include "Whistle.h"
 
+/*
 void* operator new (unsigned int size)
 {
     void* ptr = RTAlloc(gWorld, size);
@@ -41,6 +42,8 @@ void operator delete(void* ptr) noexcept
 {
     RTFree(gWorld, ptr);
 }
+*/
+
 using namespace stk;
 
 
@@ -54,41 +57,78 @@ char insts[NUM_INSTS][10] = { "Clarinet", "BlowHole", "Saxofony", "Flute", "Bras
                               "Rhodey", "Wurley", "TubeBell", "HevyMetl", "PercFlut",
                               "BeeThree", "FMVoices", "VoicForm", "Moog", "Simple", "Drummer",
                               "BandedWG", "Shakers", "ModalBar", "Mesh2D", "Resonate", "Whistle" };
+#define GETMEM(Inst) RTAlloc(gWorld, sizeof(Inst))
+                        
+void * getmem(int number){
+    
+  void *mem=0;
+  if     (number==0)  mem = GETMEM(Clarinet);
+  else if (number==1)  mem = GETMEM(BlowHole);
+  else if (number==2)  mem = GETMEM(Saxofony);
+  else if (number==3)  mem = GETMEM(Flute);
+  else if (number==4)  mem = GETMEM(Brass);
+  else if (number==5)  mem = GETMEM(BlowBotl);
+  else if (number==6)  mem = GETMEM(Bowed);
+  else if (number==7)  mem = GETMEM(Plucked);
+  else if (number==8)  mem = GETMEM(StifKarp);
+  else if (number==9)  mem = GETMEM(Sitar);
+  else if (number==10) mem = GETMEM(Mandolin);
 
+  else if (number==11) mem = GETMEM(Rhodey);
+  else if (number==12) mem = GETMEM(Wurley);
+  else if (number==13) mem = GETMEM(TubeBell);
+  else if (number==14) mem = GETMEM(HevyMetl);
+  else if (number==15) mem = GETMEM(PercFlut);
+  else if (number==16) mem = GETMEM(BeeThree);
+  else if (number==17) mem = GETMEM(FMVoices);
+
+  else if (number==18) mem = GETMEM(VoicForm);
+  else if (number==19) mem = GETMEM(Moog);
+  else if (number==20) mem = GETMEM(Simple);
+  else if (number==21) mem = GETMEM(Drummer);
+  else if (number==22) mem = GETMEM(BandedWG);
+  else if (number==23) mem = GETMEM(Shakers);
+  else if (number==24) mem = GETMEM(ModalBar);
+  else if (number==25) mem = GETMEM(Mesh2D);
+  else if (number==26) mem = GETMEM(Resonate);
+  else if (number==27) mem = GETMEM(Whistle);
+
+  return mem;
+}
 int voiceByNumber(int number, Instrmnt **instrument)
 {
   int temp = number;
-  
-  if     (number==0)  *instrument = new Clarinet(10.0);
-  else if (number==1)  *instrument = new BlowHole(10.0);
-  else if (number==2)  *instrument = new Saxofony(10.0);
-  else if (number==3)  *instrument = new Flute(10.0);
-  else if (number==4)  *instrument = new Brass(10.0);
-  else if (number==5)  *instrument = new BlowBotl;
-  else if (number==6)  *instrument = new Bowed(10.0);
-  else if (number==7)  *instrument = new Plucked(5.0);
-  else if (number==8)  *instrument = new StifKarp(5.0);
-  else if (number==9)  *instrument = new Sitar(5.0);
-  else if (number==10) *instrument = new Mandolin(5.0);
+  void *mem = getmem(number);
+  if     (number==0)  *instrument = new(mem) Clarinet(10.0);
+  else if (number==1)  *instrument = new(mem) BlowHole(10.0);
+  else if (number==2)  *instrument = new(mem) Saxofony(10.0);
+  else if (number==3)  *instrument = new(mem) Flute(10.0);
+  else if (number==4)  *instrument = new(mem) Brass(10.0);
+  else if (number==5)  *instrument = new(mem) BlowBotl;
+  else if (number==6)  *instrument = new(mem) Bowed(10.0);
+  else if (number==7)  *instrument = new(mem) Plucked(5.0);
+  else if (number==8)  *instrument = new(mem) StifKarp(5.0);
+  else if (number==9)  *instrument = new(mem) Sitar(5.0);
+  else if (number==10) *instrument = new(mem) Mandolin(5.0);
 
-  else if (number==11) *instrument = new Rhodey;
-  else if (number==12) *instrument = new Wurley;
-  else if (number==13) *instrument = new TubeBell;
-  else if (number==14) *instrument = new HevyMetl;
-  else if (number==15) *instrument = new PercFlut;
-  else if (number==16) *instrument = new BeeThree;
-  else if (number==17) *instrument = new FMVoices;
+  else if (number==11) *instrument = new(mem) Rhodey;
+  else if (number==12) *instrument = new(mem) Wurley;
+  else if (number==13) *instrument = new(mem) TubeBell;
+  else if (number==14) *instrument = new(mem) HevyMetl;
+  else if (number==15) *instrument = new(mem) PercFlut;
+  else if (number==16) *instrument = new(mem) BeeThree;
+  else if (number==17) *instrument = new(mem) FMVoices;
 
-  else if (number==18) *instrument = new VoicForm;
-  else if (number==19) *instrument = new Moog;
-  else if (number==20) *instrument = new Simple;
-  else if (number==21) *instrument = new Drummer;
-  else if (number==22) *instrument = new BandedWG;
-  else if (number==23) *instrument = new Shakers;
-  else if (number==24) *instrument = new ModalBar;
-  else if (number==25) *instrument = new Mesh2D(10, 10);
-  else if (number==26) *instrument = new Resonate;
-  else if (number==27) *instrument = new Whistle;
+  else if (number==18) *instrument = new(mem) VoicForm;
+  else if (number==19) *instrument = new(mem) Moog;
+  else if (number==20) *instrument = new(mem) Simple;
+  else if (number==21) *instrument = new(mem) Drummer;
+  else if (number==22) *instrument = new(mem) BandedWG;
+  else if (number==23) *instrument = new(mem) Shakers;
+  else if (number==24) *instrument = new(mem) ModalBar;
+  else if (number==25) *instrument = new(mem) Mesh2D(10, 10);
+  else if (number==26) *instrument = new(mem) Resonate;
+  else if (number==27) *instrument = new(mem) Whistle;
 
   else {
     printf("\nUnknown instrument or program change requested!\n");
@@ -179,8 +219,10 @@ void StkInst_Ctor(StkInst* unit) {
 
 void StkInst_Dtor(StkInst* unit)
 {
-	delete unit->m_values;
-	delete unit->inst;
+	//delete unit->m_values;
+	//delete unit->inst;
+    RTFree(unit->mWorld, unit->m_values);
+    RTFree(unit->mWorld, unit->inst);
 
 }
 
@@ -263,8 +305,14 @@ void StkMesh2D_Ctor(StkMesh2D* unit) {
 	unit->Xpos = IN0(5);
 	unit->Ypos = IN0(6);
 	unit->decay = IN0(7);
-
-	unit->inst = new Mesh2D(unit->XD,unit->YD); 
+    
+    void* mem = RTAlloc(unit->mWorld,sizeof(Mesh2D));
+    if (!mem) {
+			Print("StkMesh2D: RT memory allocation failed on values\n");
+			SETCALC(Unit_next_nop);
+			return;
+		}
+	unit->inst = new(mem) Mesh2D(unit->XD,unit->YD); 
 	if(unit->inst==NULL){
 		Print("StkMesh2D: RT memory allocation failed on instrument\n");
 		SETCALC(StkMesh2D_next_nop);
@@ -279,8 +327,8 @@ void StkMesh2D_Ctor(StkMesh2D* unit) {
 void StkMesh2D_Dtor(StkMesh2D* unit)
 {
 
-	delete unit->inst;
-
+	//delete unit->inst;
+    RTFree(unit->mWorld, unit->inst);
 }
 
 void StkMesh2D_next(StkMesh2D *unit, int inNumSamples)
