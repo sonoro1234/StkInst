@@ -333,6 +333,7 @@ extern "C"
 }
 
 void StkGlobals_next(StkGlobals *unit, int inNumSamples){
+    NodeEnd(&unit->mParent->mNode);
 }
 void StkGlobals_Ctor(StkGlobals* unit) {
 	gWorld = unit->mWorld;
