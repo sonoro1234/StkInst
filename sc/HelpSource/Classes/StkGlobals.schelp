@@ -30,7 +30,7 @@ code::
 
 //a instrument that uses waveforms///////////////////
 //first set rawfilepath to let Stk know where to look
-{StkGlobals.ar(1,1,"set path here")}.play;
+{StkGlobals.ar(1,1,Platform.userExtensionDir ++"/SC3Plugins/StkInst/rawwaves")}.play;
 
 //Define mandolin synthdef
 (
